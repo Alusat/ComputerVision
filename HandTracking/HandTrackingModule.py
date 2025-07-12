@@ -3,8 +3,8 @@ import mediapipe as mp
 import time
 
 class HandDetector():
-    def __init__(self, static_image_mode=False, maxHands=1, modelComplexity=1,
-                 minDetectionConfidence=0.5, minTrackingConfidence=0.5):
+    def __init__(self, static_image_mode, maxHands, modelComplexity,
+                 minDetectionConfidence, minTrackingConfidence):
         self.static_image_mode = static_image_mode
         self.maxHands = maxHands
         self.modelComplexity = modelComplexity
@@ -59,15 +59,14 @@ def main():
         img = detector.findHands(img)
         lmList = detector.findPosition(img)
 
-        if lmList:
-            print(f"Punto 4 (pulgar): {lmList[4]}")
+        #if lmList:
+            #print(f"Punto 4 (pulgar): {lmList[4]}")
 
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
 
-        cv2.putText(img, f"FPS: {int(fps)}", (10, 70),
-                    cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
+        cv2.putText(img, str(int(fps)), (10, 30), cv2.FONT_HERSHEY_TRIPLEX, 1, (0, 255, 0), 3)
 
         cv2.imshow("Image", img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
