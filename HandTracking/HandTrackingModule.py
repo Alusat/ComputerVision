@@ -5,6 +5,7 @@ import time
 class HandDetector():
     def __init__(self, static_image_mode, maxHands, modelComplexity,
                  minDetectionConfidence, minTrackingConfidence):
+        self.results = None
         self.static_image_mode = static_image_mode
         self.maxHands = maxHands
         self.modelComplexity = modelComplexity
@@ -19,9 +20,10 @@ class HandDetector():
                                         min_tracking_confidence=self.minTrackingConfidence)
         self.mpDraw = mp.solutions.drawing_utils
 
-    def findHands(self, img, draw=True):
+    def findHands(self, img, draw):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(imgRGB)
+        self.draw = draw
 
         if self.results.multi_hand_landmarks:
             for handLms in self.results.multi_hand_landmarks:
@@ -38,8 +40,8 @@ class HandDetector():
                 h, w, c = img.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 lmList.append([id, cx, cy])
-                if draw:
-                    cv2.circle(img, (cx, cy), 10, (255, 0, 255), cv2.FILLED)
+                #if draw:
+                    #cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
         return lmList
 
 def main():
