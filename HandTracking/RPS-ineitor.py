@@ -19,6 +19,18 @@ def main(showInfo=True):  # info para debugear
     currentRPS = "???"
     RPS_indicator = None
 
+    #cargar imagnes
+    rock_img = cv2.imread("images/rock.png")
+    paper_img = cv2.imread("images/paper.png")
+    scissors_img = cv2.imread("images/scissors.png")
+    unknown_img = cv2.imread("images/unknown.png")
+
+    # que tengan todas el mismo tamaño
+    rock_img = cv2.resize(rock_img, (800, 1000))
+    paper_img = cv2.resize(paper_img, (800, 1000))
+    scissors_img = cv2.resize(scissors_img, (800, 1000))
+    unknown_img = cv2.resize(unknown_img, (800, 1000))
+
     while True:
         success, img = cap.read()
         if not success:  # si no hay camara nada
@@ -30,19 +42,21 @@ def main(showInfo=True):  # info para debugear
         drawDots = False  # puntos + grandes
         lmList = detector.findPosition(img, 0, drawDots)  # ya deja los valres en pixeles
 
-        # Create RPS indicator window (always active)
+        # Crea ventana RPS
         if RPS_indicator is None:
-            RPS_indicator_img = np.zeros((200, 400, 3), np.uint8)
-            cv2.imshow("RPS Indicator", RPS_indicator_img)
+            #RPS_winning_img = np.zeros((200, 400, 3), np.uint8)
+            cv2.imshow("RPS Indicator", unknown_img)
             RPS_indicator = True
 
-        # Update RPS indicator content
-        RPS_indicator_img = np.zeros((200, 400, 3), np.uint8)
+        # Actualizar valor actula de RPS
+        #RPS_winning_img = np.zeros((200, 400, 3), np.uint8)
         if len(lmList) == 0:
             currentRPS = "???"
-            RPSinator_text = "???"
+            RPS_winning_img = unknown_img.copy()
+
         else:
             # mirar libreria de mediapipe para saber que indices corresponden a cada dedo
+
             cx, cy = lmList[12][1], lmList[12][2]  # x y de la punta del dedo corazón
             ix, iy = lmList[8][1], lmList[8][2]  # x y de la punta del dedo indice
             lengthCI = math.hypot(cx - ix, cy - iy)  # dist corazón indice
@@ -54,30 +68,33 @@ def main(showInfo=True):  # info para debugear
             lengthPI = math.hypot(px - ix, py - iy)  # dist pulgar indice
 
             bmx, bmy = lmList[0][1], lmList[0][2] # x y de la base de la palma
-            bcx, bcy = lmList[9][1], lmList[9][2]
             lengthBmBc = math.hypot(bmx - cx, bmy - cy) # distancia base mano-base corazon
 
             if lengthCI > lengthPM:
+                RPS_winning_img = rock_img.copy()
                 currentRPS = "SCISSORS"
-                RPSinator_text = "ROCK WINS!"
+                # RPSinator_text = "ROCK WINS!"
+
             elif lengthPM > 3 * lengthCI and lengthPI > lengthCI:
+                RPS_winning_img = scissors_img.copy()
                 currentRPS = "PAPER"
-                RPSinator_text = "SCISSORS WINS!"
+                # RPSinator_text = "SCISSORS WINS!"
+
             elif lengthPM < lengthBmBc:
+                RPS_winning_img = paper_img.copy()
                 currentRPS = "ROCK"
-                RPSinator_text = "PAPER WINS!"
+                # RPSinator_text = "PAPER WINS!"
+
             else:
+                RPS_winning_img = unknown_img.copy()
                 currentRPS = "???"
-                RPSinator_text = "???"
+                # RPSinator_text = "???"
 
+        # actualizar siempre RPS
+        # Eliminado el texto superpuesto sobre la imagen
+        cv2.imshow("RPS Indicator", RPS_winning_img)
 
-        # Always update the RPS indicator window
-        cv2.putText(RPS_indicator_img, f"Your move: {currentRPS}", (50, 70),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-        cv2.putText(RPS_indicator_img, RPSinator_text, (50, 130),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-        cv2.imshow("RPS Indicator", RPS_indicator_img)
-
+        #solo para debugear
         if showInfo:
             if len(lmList) > 0:
                 cv2.circle(img, (cx, cy), 15, (255, 255, 0), cv2.FILLED)
@@ -89,7 +106,6 @@ def main(showInfo=True):  # info para debugear
                 cv2.circle(img, (px, py), 15, (255, 0, 0), cv2.FILLED)
                 cv2.circle(img, (mx, my), 15, (255, 0, 0), cv2.FILLED)
                 cv2.line(img, (px, py), (mx, my), (255, 0, 0), 2)
-                length = math.hypot(px - mx, py - my)
                 print("pulgar-meñique")
                 print(lengthPM)
 
@@ -101,9 +117,11 @@ def main(showInfo=True):  # info para debugear
             cv2.imshow("Hand Tracking", img)  # mostrar ventana con imagen
             print(currentRPS)
 
+        #salir con q
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+        #calcular fps y mostrar camara
         if showInfo:
             cTime = time.time()
             fps = 1 / (cTime - pTime)
