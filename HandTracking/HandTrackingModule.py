@@ -46,7 +46,7 @@ class HandDetector():
 
 def main():
     pTime = 0
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     detector = HandDetector(static_image_mode=False,
                             maxHands=1,
                             modelComplexity=1,
@@ -58,7 +58,7 @@ def main():
         if not success:
             break
 
-        img = detector.findHands(img)
+        img = detector.findHands(img, draw=True)
         lmList = detector.findPosition(img)
 
         #if lmList:

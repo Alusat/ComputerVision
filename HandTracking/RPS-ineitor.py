@@ -11,7 +11,7 @@ def main(showInfo=False):
     cap = None
 
     for index in camera_indexes:
-        cap = cv2.VideoCapture(index)
+        cap = cv2.VideoCapture(index, cv2.CAP_DSHOW)
         time.sleep(0.5)
         if cap.isOpened():
             ret, frame = cap.read()

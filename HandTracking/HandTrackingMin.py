@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 import time
 
-cap = cv2.VideoCapture(0) #camara
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) #camara
 
 
 mpHands = mp.solutions.hands
