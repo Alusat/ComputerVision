@@ -1,6 +1,6 @@
 ***Computer Vision Project***
 
-**Video followed:** https://www.youtube.com/watch?v=01sAkU_NvOY
+**Video followed:** freeCodeCamp.org --- Advanced Computer Vision with Python - Full Course --- https://www.youtube.com/watch?v=01sAkU_NvOY
 
 This project demonstrates hand tracking and body pose estimation using Python and Mediapipe.
 It is structured in two main modules: HandTracking and PoseEstimation.
